@@ -1,0 +1,27 @@
+
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <RateController hz="1.0"> <!-- once, for demo -->
+      <Sequence name="NavigateWithReplanning">
+        
+        <ComputeCoveragePath nav_path="{path}" polygons="{field_polygon}" polygons_frame_id="{polygon_frame_id}"/>
+        <!--ComputeCoveragePath nav_path="{path}" file_field="{field_filepath}"/-->
+        
+        <GetPoseFromPath path="{path}" pose="{start_pose}" index="0" />
+        <ComputePathToPose goal="{start_pose}" path="{path_to_start}" planner_id="GridBased2"/>
+        
+        <FollowPath path="{path_to_start}" controller_id="FollowPath2"/>
+        <RecoveryNode number_of_retries="100">
+          <FollowPath path="{path}" controller_id="FollowPath2"/>
+          <RoundRobin>
+            <!--Spin spin_dist="1.57"/>
+            <BackUp backup_dist="0.25" backup_speed="0.05"/-->  
+            <FollowPath path="{path}" controller_id="FollowPath2"/>
+            <Wait wait_duration="1.0"/>
+          </RoundRobin>
+          
+        </RecoveryNode>
+      </Sequence>
+    </RateController>
+  </BehaviorTree>
+</root>
